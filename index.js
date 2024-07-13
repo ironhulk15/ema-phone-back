@@ -178,6 +178,7 @@ app.post('/api/test/contacts', (req, res) => {
 });
 
 // CRUD API Endpoints
+/*
 app.get('/api/contacts', async (req, res) => {
   console.log('contacts')
   try {
@@ -238,7 +239,7 @@ app.delete('/api/contacts/:id', async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 });
-
+*/
 app.listen(process.env.PORT || 3001, () =>
   console.log(`Express server is running on port ${process.env.PORT || 3001}`)
 );
