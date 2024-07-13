@@ -13,7 +13,7 @@ const client = twilio(config.twilio.accountSid, config.twilio.authToken);
 
 const request = require('request');
 const cors = require('cors');
-const mongoose = require('mongoose');
+//const mongoose = require('mongoose');
 
 const app = express();
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -164,6 +164,7 @@ app.get('/download-recording/:recordingSid', (req, res) => {
   request.get(url, { 'auth': auth }).pipe(res);
 });
 
+/*
 app.post('/api/test/contacts', (req, res) => {
   const Contact = mongoose.model('contacts')
 
@@ -176,7 +177,7 @@ app.post('/api/test/contacts', (req, res) => {
   });
 
 });
-
+*/
 // CRUD API Endpoints
 /*
 app.get('/api/contacts', async (req, res) => {
