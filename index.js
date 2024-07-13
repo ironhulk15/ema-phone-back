@@ -10,6 +10,7 @@ const db = require('./db');
 const Data2 = require('./schema');
 const twilio = require('twilio');
 const client = twilio(config.twilio.accountSid, config.twilio.authToken);
+
 const request = require('request');
 const cors = require('cors');
 const mongoose = require('mongoose');
@@ -22,6 +23,7 @@ app.use(cors());
 
 
 const sendTokenResponse = (token, res) => {
+  console.log('token ----->', token.toJwt())
   res.set("Content-Type", "application/json");
   res.send(
     JSON.stringify({
@@ -48,6 +50,7 @@ app.get("/api/greeting", (req, res) => {
 });
 
 app.get("/chat/token", (req, res) => {
+  console.log("/chat/token")
   const identity = req.query.identity;
   const token = chatToken(identity, config);
   sendTokenResponse(token, res);
@@ -60,6 +63,7 @@ app.post("/chat/token", (req, res) => {
 });
 
 app.get("/video/token", (req, res) => {
+  console.log("/video/token")
   const identity = req.query.identity;
   const room = req.query.room;
   const token = videoToken(identity, room, config);
@@ -74,6 +78,7 @@ app.post("/video/token", (req, res) => {
 });
 
 app.get("/voice/token", (req, res) => {
+  console.log("/voice/token")
   const identity = req.query.identity;
   const token = voiceToken(identity, config);
   sendTokenResponse(token, res);
@@ -86,16 +91,22 @@ app.post("/voice/token", (req, res) => {
 });
 
 app.post("/voice", (req, res) => {
+  console.log('voice')
   const To = req.body.To;
   const timeoutDuration = 600;
   const response = new VoiceResponse();
   const dial = response.dial({ callerId: config.twilio.callerId, record: "record-from-answer", timeout: timeoutDuration });
-  dial.number(To);
+
+  dial.number({
+    byoc: 'BY8b044781cdac235b3a2d4f86da28b918'
+  }, To);
+
   res.set("Content-Type", "text/xml");
   res.send(response.toString());
 });
 
 app.post("/voice/incoming", (req, res) => {
+  console.log("/voice/incoming")
   const response = new VoiceResponse();
   const dial = response.dial({ callerId: req.body.From, answerOnBridge: true });
   dial.client("hamza");
@@ -104,6 +115,7 @@ app.post("/voice/incoming", (req, res) => {
 });
 
 app.get("/call-logs", async (req, res) => {
+  console.log("call-logs")
   try {
     const { from, to, limit } = req.query;
     const filterOptions = {
@@ -128,6 +140,7 @@ app.get("/call-logs", async (req, res) => {
 });
 
 app.get("/call-recordings", async (req, res) => {
+  console.log("/call-recordings")
   let recordings = [];
   try {
     const { callId } = req.query;
@@ -177,7 +190,7 @@ app.get('/api/contacts', async (req, res) => {
 });
 
 app.post('/api/contacts', async (req, res) => {
-    console.log('contacts post')
+  console.log('contacts post')
   const contact = new Data2(req.body);
   try {
     const newContact = await contact.save();
@@ -188,7 +201,7 @@ app.post('/api/contacts', async (req, res) => {
 });
 
 app.get('/api/contacts/:id', async (req, res) => {
-    console.log('contacts get id')
+  console.log('contacts get id')
   try {
     const contact = await Data2.findById(req.params.id);
     if (!contact) {
